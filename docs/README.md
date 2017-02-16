@@ -99,17 +99,17 @@ Operations objects MUST have exactly one "o", object, member. The value of this 
 
 In the case that the value of "o" is a string, this MUST interpreted as either an [IRI](https://tools.ietf.org/html/rfc3987) or a [blank node](https://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#blank-nodes). 
 
-**Note:** when a patch is applied with an IRI object, the existence of a resource with that identifier cannot be assumed; this contrasts strongly with blank nodes, which MUST exist and be defined in the patch in which they are referred to.
+**Note:** when a patch is applied with an IRI object, the existence of a resource with that identifier cannot be assumed; this contrasts strongly with blank nodes, which MUST exist and be fully defined in the patch in which they are referred to (see "Handling blank nodes" below).
 
 In cases where the value is an object, the value of "datatype" must be a valid [XML Schema datatype](https://www.w3.org/TR/xmlschema-2/). The interpretation of "value" MUST be in accordance with the value of "datatype" so that the value passed as a patch to the document is meaningful in RDF.  
 
 Note that early implementations provided support for objects where "datatypes" with values [http://www.w3.org/2001/XMLSchema#anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI) were provided with "values" IRI or a blank node. This latter usage is strongly discouraged; if a consistent syntax is required, an XML schema datatype for blank node MUST be used.
 
 ###add
-Add has a very simple function, it always adds new sets of triples. If a pre-existing triple exists with similar or the same characteristics, it MUST NOT be overwritten. To overwrite, a delete and an add operation must be performed.
+Add has a very simple function, it always adds new sets of statements. If a pre-existing statement exists with similar or the same characteristics, it MUST NOT be overwritten. To overwrite, a delete and an add operation must be performed.
 
 ###del
-Del also has a very simple function, it always removes sets of triples.
+Del also has a very simple function, it always removes sets of statements.
 
 ###Blank node handling
 Blank nodes are anonymous resources that are referenced using the following syntax ```_:document_unique_id```. The ```document_unique_id``` is typically given as ```b + n``` where *n* is an integer, incrementing for each new blank node. 
@@ -149,7 +149,7 @@ While the following is a valid request:
 ]
 ```
 
-In cases where there are further statements attached to a blank node referenced in the patch, not only MUST these remain unaffected by the patch, but the relation between the fully qualified IRI and the blank node MUST remain intact. Thus, to fully remove a blank node, all properties of the node MUST be referenced in the patch.
+In cases where further statements are attached to a blank node referenced in the patch, not only MUST these remain unaffected by the patch, but the relation between the fully qualified IRI and the blank node MUST remain intact. Thus, to fully remove a blank node, all properties of the node MUST be referenced in the patch. In this sense, adding data to a blank node is a matter of deleting the entire node (including all its statements) and inserting an amended copy. This, while tedious, removes the possibility of identity problems and ensures that empty nodes are not left when blank nodes are updated.
 
 ##Error handling
 If a normative requirement is violated by a JSON-LD-PATCH document, or if an operation is unsuccessful, then processing of the patch MUST terminate and the entire patch be deemed unsuccessful.

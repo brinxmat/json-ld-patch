@@ -458,6 +458,8 @@ To fully remove the original blank node, the following patch would have to be gi
 ]
 ```
 ## ANTLR4 (almost EBNF) for JSON-LD-PATCH
+[Full grammar source](../src/grammar.g4)
+
 ```
 parseJSON     : patch EOF ;
 

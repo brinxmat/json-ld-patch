@@ -2,7 +2,7 @@
 
 Greenall, Rurik T.  
 Computas AS  
-25 January 2017
+19 May 2017
 
 ## Abstract
 JavaScript Object Notation for Linked-Data patching (JSON-LD-PATCH) defines a document structure for expressing a sequence of operations to apply to an existing linked data resource; it is suitable for use with the HTTP PATCH method. The "application/ldpatch+json" media type is used to identify such patch documents

@@ -1,23 +1,23 @@
-#JavaScript object notation for linked data patching
+# JavaScript object notation for linked data patching
 
 Greenall, Rurik T.  
 Computas AS  
 25 January 2017
 
-##Abstract
+## Abstract
 JavaScript Object Notation for Linked-Data patching (JSON-LD-PATCH) defines a document structure for expressing a sequence of operations to apply to an existing linked data resource; it is suitable for use with the HTTP PATCH method. The "application/ldpatch+json" media type is used to identify such patch documents
 
-##Status of this memo
+## Status of this memo
 This document has been prepared by Oslo public library. 
 
-##Copyright notice
+## Copyright notice
 This document is provided with a CC0 licence, the full text of this licence can be found at https://creativecommons.org/publicdomain/zero/1.0/
 
-##Table of contents
+## Table of contents
 
-###Nothing doing
+### Nothing doing
 
-##Introduction
+## Introduction
 [IETF-RFC6902](https://tools.ietf.org/html/rfc6902) defines a JavaScript Object Notation (JSON) [IETF-RFC71599](https://tools.ietf.org/html/rfc7159) document structure that can be used with the PATCH extension of HTTP [IETF-RFC5789](https://tools.ietf.org/html/rfc5789) to apply partial modification of documents. Because linked data is typically expressed as [RDF](https://www.w3.org/TR/rdf11-primer/), it is inappropriate to use JSON-PATCH as defined in [IETF-RFC6902](https://tools.ietf.org/html/rfc6902) directly. 
 
 JSON-PATCH informed the development of this format along with other resources, such as:
@@ -29,12 +29,12 @@ JSON-PATCH informed the development of this format along with other resources, s
 
 In developing this format, we have moved away from the SPARQL-oriented approach and attempted to define a patch format similar to [RDF patch](https://afs.github.io/rdf-patch/) that would allow simple patching of RDF documents via named resource HTTP-URIs.
 
-##Conventions
+## Conventions
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [IETF-RFC2119](https://tools.ietf.org/html/rfc2119).
 
 When refering to IRIs, it MUST be assumed that the IRI is fully qualified.
 
-##Document structure
+## Document structure
 A JSON-LD-PATCH document is a JSON [IETF-RFC71599](https://tools.ietf.org/html/rfc7159) document that represents an array of objects; each object represents a single operation to be applied to a target linked data resource.
 
 The following is an example JSON-LD-PATCH document, transferred in an HTTP PATCH request:
@@ -86,7 +86,7 @@ Accept: application/ld+json
 ``` 
 Evaluation of a JSON-LD-PATCH document occurs as a single event. Operations are sorted and processed as groups of delete and then add operations until the opperations are applied or the entire patch fails.
 
-##Operations
+## Operations
 Operation objects MUST have exactly one "op" (operation) member; this value indicates which operation is to be performed. The value MUST be one of "add" or "del"; all other values result in an error.
 
 Operations objects MUST have exactly one "s", subject, member. The value of this member MUST be one of [IRI](https://tools.ietf.org/html/rfc3987) or [blank node](https://www.w3.org/TR/2014/REC-rdf11-mt-20140225/#blank-nodes).
@@ -105,13 +105,13 @@ In cases where the value is an object, the value of "datatype" must be a valid [
 
 Note that early implementations provided support for objects where "datatypes" with values [http://www.w3.org/2001/XMLSchema#anyURI](https://www.w3.org/TR/xmlschema11-2/#anyURI) were provided with "values" IRI or a blank node. This latter usage is strongly discouraged; if a consistent syntax is required, an XML schema datatype for blank node MUST be used.
 
-###add
+### add
 Add has a very simple function, it always adds new sets of statements. If a pre-existing statement exists with similar or the same characteristics, it MUST NOT be overwritten. To overwrite, a delete and an add operation must be performed.
 
-###del
+### del
 Del also has a very simple function, it always removes sets of statements.
 
-###Blank node handling
+### Blank node handling
 Blank nodes are anonymous resources that are referenced using the following syntax ```_:document_unique_id```. The ```document_unique_id``` is typically given as ```b + n``` where *n* is an integer, incrementing for each new blank node. 
 
 In order for blank nodes to be added or deleted, it is necessary to define their relation to a named node. For example, the following MUST fail:
@@ -151,18 +151,18 @@ While the following is a valid request:
 
 In cases where further statements are attached to a blank node referenced in the patch, not only MUST these remain unaffected by the patch, but the relation between the fully qualified IRI and the blank node MUST remain intact. Thus, to fully remove a blank node, all properties of the node MUST be referenced in the patch. In this sense, adding data to a blank node is a matter of deleting the entire node (including all its statements) and inserting an amended copy. This, while tedious, removes the possibility of identity problems and ensures that empty nodes are not left when blank nodes are updated.
 
-##Error handling
+## Error handling
 If a normative requirement is violated by a JSON-LD-PATCH document, or if an operation is unsuccessful, then processing of the patch MUST terminate and the entire patch be deemed unsuccessful.
 
 See [IETF-RFC5789 section 2.2](https://tools.ietf.org/html/rfc5789#section-2.2) for details concerning errors in HTTP PATCH.
-##MIME-type
+## MIME-type
 
 application/ldpatch+json
 
-##Examples
+## Examples
 Note that each example assumes a new resource with no data, unless otherwise stated.
 
-###Adding a statement to an existing resource
+### Adding a statement to an existing resource
 
 ```
 {
@@ -179,7 +179,7 @@ Result:
 
 ```<http://example.org/myResource> <http://example.org/ontology#name> "Herbjørg"^^<http://www.w3.org/2001/XMLSchema#string> . ```
 
-###Adding multiple statements to a resource
+### Adding multiple statements to a resource
 
 ```
 [
@@ -209,7 +209,7 @@ Result:
 <http://example.org/myResource> <http://example.org/ontology#birthDate> "1962-12-02"^^<http://www.w3.org/2001/XMLSchema#date> .
 <http://example.org/myResource> <http://example.org/ontology#namePrefix> "HRH"^^<http://www.w3.org/2001/XMLSchema#string> .
 ```
-###Deleting a statement from a resource
+### Deleting a statement from a resource
 
 Assuming a resource:
 
@@ -236,7 +236,7 @@ Result:
 <http://example.org/myResource> <http://example.org/ontology#birthDate> "1962-12-02"^^<http://www.w3.org/2001/XMLSchema#date> .
 ```
 
-###Deleting multiple statements from a resource
+### Deleting multiple statements from a resource
 
 Assuming a resource:
 
@@ -274,7 +274,7 @@ Result:
 ```
 <http://example.org/myResource> <http://example.org/ontology#id> "id_seumas"^^<http://www.w3.org/2001/XMLSchema#string> .
 ```
-###Deleting and adding statements
+### Deleting and adding statements
 Assuming a resource:
 
 ```
@@ -311,7 +311,7 @@ Result:
 <http://example.org/myResource> <http://example.org/ontology#id> "id_livia"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://example.org/myResource> <http://example.org/ontology#birthDate> "1972-08-18"^^<http://www.w3.org/2001/XMLSchema#date> .
 ```
-###Replacing values
+### Replacing values
 ```
 <http://example.org/myResource> <http://example.org/ontology#id> "id_max"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://example.org/myResource> <http://example.org/ontology#birthDate> "1999-02-23"^^<http://www.w3.org/2001/XMLSchema#date> .
@@ -347,7 +347,7 @@ Result:
 <http://example.org/myResource> <http://example.org/ontology#birthDate> "1972-02-21"^^<http://www.w3.org/2001/XMLSchema#date> .
 ```
 
-###Adding relationships to other resources
+### Adding relationships to other resources
 
 ```
 {
@@ -363,7 +363,7 @@ Result:
 <http://example.org/myResource> <http://example.org/ontology#sameAs> <http://example.org/otherResource> .
 ```
 
-###Adding blank nodes to a resource
+### Adding blank nodes to a resource
 
 ```
 [
@@ -398,7 +398,7 @@ _:b01231123123 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example
 _:b01231123123 <http://example.org/ontology#name> "Dobbin"^^<http://www.w3.org/2001/XMLSchema#string> .
 ```
 
-###Deleting blank nodes
+### Deleting blank nodes
 For a resource:
 
 ```
@@ -453,8 +453,105 @@ To fully remove the original blank node, the following patch would have to be gi
     "o": {
       "value": "Dobbin",
       "datatype": "http://www.w3.org/2001/XMLSchema#string"
+    }
   }
 ]
 ```
-##EBNF for JSON-LD-PATCH
+## ANTLR4 (almost EBNF) for JSON-LD-PATCH
+```
+parseJSON     : patch EOF ;
 
+patch         : statement | statementList ;
+statementList : '[' statement ( SEP statement )* ']';
+statement     : '{' declaration '}' ;
+
+declaration : op_jobj SEP s_jobj SEP p_jobj SEP o_jobj
+               | op_jobj SEP s_jobj SEP o_jobj SEP p_jobj  
+               | op_jobj SEP p_jobj SEP s_jobj SEP o_jobj  
+               | op_jobj SEP p_jobj SEP o_jobj SEP s_jobj
+               | op_jobj SEP o_jobj SEP s_jobj SEP p_jobj  
+               | op_jobj SEP o_jobj SEP p_jobj SEP s_jobj  
+               | s_jobj SEP op_jobj SEP p_jobj SEP o_jobj  
+               | s_jobj SEP op_jobj SEP o_jobj SEP p_jobj  
+               | s_jobj SEP p_jobj SEP op_jobj SEP o_jobj  
+               | s_jobj SEP p_jobj SEP o_jobj SEP op_jobj  
+               | s_jobj SEP o_jobj SEP op_jobj SEP p_jobj  
+               | s_jobj SEP o_jobj SEP p_jobj SEP op_jobj  
+               | p_jobj SEP op_jobj SEP s_jobj SEP o_jobj  
+               | p_jobj SEP op_jobj SEP o_jobj SEP s_jobj
+               | p_jobj SEP s_jobj SEP op_jobj SEP o_jobj 
+               | p_jobj SEP s_jobj SEP o_jobj SEP op_jobj 
+               | p_jobj SEP o_jobj SEP op_jobj SEP s_jobj
+               | p_jobj SEP o_jobj SEP s_jobj SEP op_jobj 
+               | o_jobj SEP op_jobj SEP s_jobj SEP p_jobj 
+               | o_jobj SEP op_jobj SEP p_jobj SEP s_jobj
+               | o_jobj SEP s_jobj SEP op_jobj SEP p_jobj 
+               | o_jobj SEP s_jobj SEP p_jobj SEP op_jobj
+               | o_jobj SEP p_jobj SEP op_jobj SEP s_jobj
+               | o_jobj SEP p_jobj SEP s_jobj SEP op_jobj
+               ;
+
+op_jobj : OP ':' OPERATION ;
+s_jobj  : S ':' ( JSONURI | BLANKNODE ) ;
+p_jobj  : P ':' JSONURI ;
+o_jobj  : O ':' ( JSONURI
+              | BLANKNODE
+              | typedstring
+              | langstring )
+              ;
+
+jsonuri  : JSONURI ;
+typedstring : '{' VALUE ':' STRING SEP TYPE ':' JSONURI '}' ;
+langstring : '{' VALUE ':' in1=STRING SEP LANG ':' in2=STRING '}' ;
+string : STRING ;
+number : NUMBER ;
+plainliteral : ( string | number ) ;
+
+VALUE : '"value"' ;
+TYPE : '"datatype"' ;
+LANG : '"lang"' ;
+SEP  : ',' ;
+OP   : '"op"' ;
+S    : '"s"' ;
+P    : '"p"' ;
+O    : '"o"' ;
+
+OPERATION : ( ADD | DEL ) ;
+BLANKNODE : '"_:' UNQUOTED_STRING '"' ;
+JSONURI  : '"' HTTP ( PN_CHARS | '.' | ':' | '/' | '\\' | '#' | '@' | '%' | '&' | UCHAR )+ '"' ;
+STRING : '"' UNQUOTED_STRING '"' ;
+NUMBER
+    :   '-'? INT '.' [0-9]+ EXP?
+    |   '-'? INT EXP            
+    |   '-'? INT               
+    ;
+
+WS : [ \t\r\n]+ -> skip ;
+fragment ADD : '"add"' ;
+fragment DEL : '"del"' ;
+fragment UNQUOTED_STRING : ( ESC | ~["\\] )* ;
+fragment ESC :   '\\' ["\\/bfnrt] | UNICODE ;
+fragment HTTP     : ('http' 's'? | 'HTTP' 'S'?) '://'  ;
+fragment UCHAR    : UNICODE | '\\U' HEX HEX HEX HEX HEX HEX HEX HEX;
+fragment PN_CHARS_BASE :   'A'..'Z'
+        |   'a'..'z'
+        |   '\u00C0'..'\u00D6'
+        |   '\u00D8'..'\u00F6'
+        |   '\u00F8'..'\u02FF'
+        |   '\u0370'..'\u037D'
+        |   '\u037F'..'\u1FFF'
+        |   '\u200C'..'\u200D'
+        |   '\u2070'..'\u218F'
+        |   '\u2C00'..'\u2FEF'
+        |   '\u3001'..'\uD7FF'
+        |   '\uF900'..'\uFDCF'
+        |   '\uFDF0'..'\uFFFD'
+        ;
+fragment PN_CHARS_U    : PN_CHARS_BASE | '_';
+fragment PN_CHARS      : PN_CHARS_U | '-' | [0-9] | '\u00B7' | [\u0300-\u036F] | [\u203F-\u2040];
+fragment HEX           : [0-9] | [A-F] | [a-f];
+fragment UNICODE       : '\\u' HEX HEX HEX HEX ;
+fragment INT :   '0' | [1-9] [0-9]* ;
+fragment EXP :   [Ee] [+\-]? INT ;
+
+```
